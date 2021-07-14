@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('speed_up', type=int, nargs='?', default=1)
+    parser.add_argument('--file', type=str, nargs='?', default='epidemiology.csv')
     args = parser.parse_args()
 
     def sleep(td: dt.timedelta):
@@ -28,15 +29,15 @@ if __name__ == '__main__':
         'target': 'new_confirmed',
         'converters': {col: parse_float
                        for col in ['new_confirmed', 'new_deceased', 'new_recovered',
-                                   'new_tested', 'cumulative_confirmed', 'cumulative_deceased',
-                                   'cumulative_recovered', 'cumulative_tested']},
+                                   'cumulative_confirmed', 'cumulative_deceased',
+                                   'cumulative_recovered']},
         'parse_dates': {'date': '%Y-%m-%d'}
     }
 
     host = 'http://localhost:5000'
     mae = metrics.MAE()
 
-    for i, (x, y) in enumerate(stream.iter_csv('epidemiology.csv', **params)):
+    for i, (x, y) in enumerate(stream.iter_csv(args.file, **params)):
         if any(isinstance(val, float) and np.isnan(val) for _, val in x.items()):
             continue
 
