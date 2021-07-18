@@ -48,7 +48,12 @@ if __name__ == '__main__':
             'id': i,
             'features': features_dict
         })
-        y_pred = r.json()["prediction"]
+        try:
+            y_pred = r.json()["prediction"]
+        except KeyError:
+            print(r.__dict__)
+            raise
+
         print(f"{x['date'].timestamp()} - predicated new cases: {y_pred}")
 
         learn_request = requests.post(host + '/api/learn', json={'id': i, 'ground_truth': y})
